@@ -1,7 +1,7 @@
 import { createContext, useCallback, useEffect, useState } from 'react';
 
-import { getJwtFromLS } from '../helper/validateJwt';
-import { fetchWithToken } from '../helper/fetch';
+import { getJwtFromLS } from '../helpers/checkJWTInLS';
+import { fetchWithToken } from '../helpers/fetch';
 
 export const AuthContext = createContext();
 
