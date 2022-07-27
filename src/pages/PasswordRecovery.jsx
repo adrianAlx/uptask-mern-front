@@ -1,6 +1,42 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useAlert, useForm } from '../hooks';
+import { Alert } from '../components/Alert';
+import { fetchWithoutToken } from '../helpers/fetch';
+
 export const PasswordRecovery = () => {
+  const [formValues, handleInputChange, reset] = useForm({ email: '' });
+  const [alerta, setAlerta] = useAlert({});
+  const [emailSent, setEmailSent] = useState(false);
+
+  const { email } = formValues;
+  const { msg } = alerta;
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    if (email === '' || email.length < 6)
+      return setAlerta({ msg: 'El Email es obligatorio', error: true });
+
+    try {
+      const { data } = await fetchWithoutToken(
+        '/users/recovery-token',
+        { email },
+        'POST'
+      );
+
+      setAlerta({ msg: data.msg });
+      setEmailSent(true);
+    } catch (error) {
+      setAlerta({
+        msg: error.response.data.msg,
+        error: true,
+      });
+    }
+
+    reset();
+  };
+
   return (
     <>
       <h1 className="text-sky-600 font-black text-6xl capitalize">
@@ -9,33 +45,35 @@ export const PasswordRecovery = () => {
       </h1>
 
       <div className="mt-20 mb-10 bg-white shadow rounded-lg p-10">
-        {/* {msg && <Alert alerta={alerta} />} */}
+        {msg && <Alert alerta={alerta} />}
 
-        <form>
-          <div className="my-5">
-            <label
-              className="uppercase text-gray-600 block text-xl font-bold"
-              htmlFor="email"
-            >
-              Email
-            </label>
+        {!emailSent && (
+          <form onSubmit={handleSubmit}>
+            <div className="my-5">
+              <label
+                className="uppercase text-gray-600 block text-xl font-bold"
+                htmlFor="email"
+              >
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="Email"
+                className="w-full mt-3 p-3 border rounded-xl bg-gray-50"
+                name="email"
+                value={email}
+                onChange={handleInputChange}
+              />
+            </div>
+
             <input
-              id="email"
-              type="email"
-              placeholder="Email"
-              className="w-full mt-3 p-3 border rounded-xl bg-gray-50"
-              name="email"
-              // value={email}
-              // onChange={handleInputChange}
+              type="submit"
+              value="Enviar Instrucciones"
+              className="bg-sky-700 mb-5 w-full py-3 text-white uppercase font-bold rounded hover:cursor-pointer hover:bg-sky-800 transition-colors"
             />
-          </div>
-
-          <input
-            type="submit"
-            value="Enviar Instrucciones"
-            className="bg-sky-700 mb-5 w-full py-3 text-white uppercase font-bold rounded hover:cursor-pointer hover:bg-sky-800 transition-colors"
-          />
-        </form>
+          </form>
+        )}
       </div>
 
       <nav className="lg:flex lg:justify-between">
