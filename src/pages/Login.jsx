@@ -1,6 +1,50 @@
 import { Link } from 'react-router-dom';
 
+import { useAlert, useAuth, useForm } from '../hooks';
+import { fetchWithoutToken } from '../helpers/fetch';
+import { Alert } from '../components';
+
 export const Login = () => {
+  const { setAuthCb } = useAuth();
+  const [formValues, handleInputChange, reset] = useForm({
+    email: '',
+    password: '',
+  });
+  const [alerta, setAlerta] = useAlert({});
+
+  const { email, password } = formValues;
+  const { msg } = alerta;
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    if (!email || !password)
+      return setAlerta({
+        msg: 'Todos los campos son obligatorios!',
+        error: true,
+      });
+    if (password.length < 6)
+      return setAlerta({
+        msg: 'El password debe tener almenos 6 caracteres!',
+        error: true,
+      });
+    setAlerta({});
+
+    // Authentication:
+    try {
+      const { data } = await fetchWithoutToken(
+        '/auth/login',
+        { email, password },
+        'POST'
+      );
+      localStorage.setItem('token', data.token);
+      setAuthCb(data.user);
+    } catch (error) {
+      setAlerta({ msg: error.response.data.msg, error: true });
+    }
+
+    reset();
+  };
+
   return (
     <>
       <h1 className="text-sky-600 font-black text-6xl capitalize">
@@ -8,8 +52,11 @@ export const Login = () => {
         <span className="text-slate-700">proyectos</span>
       </h1>
 
-      <form className="my-10 bg-white shadow rounded-lg p-10">
-        {/* {msg && <Alert alerta={alerta} />} */}
+      <form
+        onSubmit={handleSubmit}
+        className="my-10 bg-white shadow rounded-lg p-10"
+      >
+        {msg && <Alert alerta={alerta} />}
 
         <div className="my-5">
           <label
@@ -25,8 +72,8 @@ export const Login = () => {
             autoFocus={true}
             className="w-full mt-3 p-3 border rounded-xl bg-gray-50"
             name="email"
-            // value={email}
-            // onChange={handleInputChange}
+            value={email}
+            onChange={handleInputChange}
           />
         </div>
         <div className="my-5">
@@ -42,8 +89,8 @@ export const Login = () => {
             placeholder="password"
             className="w-full mt-3 p-3 border rounded-xl bg-gray-50"
             name="password"
-            // value={password}
-            // onChange={handleInputChange}
+            value={password}
+            onChange={handleInputChange}
           />
         </div>
 
