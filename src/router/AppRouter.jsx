@@ -12,6 +12,7 @@ import {
   Projects,
   Register,
 } from '../pages';
+import { PrivateRoutes } from './PrivateRoutes';
 
 export const AppRouter = () => {
   const { authLoading } = useAuth();
@@ -36,7 +37,14 @@ export const AppRouter = () => {
         </Route>
 
         <Route path="/projects" element={<PrivateLayout />}>
-          <Route index element={<Projects />} />
+          <Route
+            index
+            element={
+              <PrivateRoutes>
+                <Projects />
+              </PrivateRoutes>
+            }
+          />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
