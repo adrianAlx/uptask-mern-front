@@ -1,6 +1,56 @@
 import { Link } from 'react-router-dom';
 
+import { useAlert, useForm } from '../hooks';
+import { Alert } from '../components/Alert';
+import { fetchWithoutToken } from '../helpers/fetch';
+
+const initState = {
+  name: '',
+  email: '',
+  password: '',
+  repeatPassword: '',
+};
+
 export const Register = () => {
+  const [formValues, handleInputChange, reset] = useForm(initState);
+  const [alerta, setAlerta] = useAlert({});
+  const { name, email, password, repeatPassword } = formValues;
+  const { msg } = alerta;
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+
+    if (Object.values(formValues).some(field => !field))
+      return setAlerta({
+        msg: 'Todos los campos son obligatorios',
+        error: true,
+      });
+    if (password !== repeatPassword)
+      return setAlerta({ msg: 'Los passwords no son iguales', error: true });
+    if (password.length < 6)
+      return setAlerta({
+        msg: 'El password debe ser de al menos 6 caracteres',
+        error: true,
+      });
+
+    setAlerta({});
+
+    // Add new user
+    try {
+      const { data } = await fetchWithoutToken(
+        '/auth/signup',
+        { name, email, password },
+        'POST'
+      );
+
+      setAlerta({ error: false, msg: data.msg });
+    } catch (error) {
+      setAlerta({ msg: error.response.data.errors[0].msg, error: true });
+    }
+
+    reset();
+  };
+
   return (
     <>
       <h1 className="text-sky-600 font-black text-6xl capitalize">
@@ -9,10 +59,10 @@ export const Register = () => {
       </h1>
 
       <form
-        // onSubmit={handleSubmit}
+        onSubmit={handleSubmit}
         className="my-10 bg-white shadow rounded-lg p-10" /* autoComplete="off" */
       >
-        {/* {msg && <Alert alerta={alerta} />} */}
+        {msg && <Alert alerta={alerta} />}
 
         <div className="my-5">
           <label
@@ -27,8 +77,8 @@ export const Register = () => {
             placeholder="Tu Nombre"
             className="w-full mt-3 p-3 border rounded-xl bg-gray-50"
             name="name"
-            // value={name}
-            // onChange={handleInputChange}
+            value={name}
+            onChange={handleInputChange}
           />
         </div>
         <div className="my-5">
@@ -44,8 +94,8 @@ export const Register = () => {
             placeholder="Email de Registro"
             className="w-full mt-3 p-3 border rounded-xl bg-gray-50"
             name="email"
-            // value={email}
-            // onChange={handleInputChange}
+            value={email}
+            onChange={handleInputChange}
           />
         </div>
         <div className="my-5">
@@ -61,8 +111,8 @@ export const Register = () => {
             placeholder="Password de Registro"
             className="w-full mt-3 p-3 border rounded-xl bg-gray-50"
             name="password"
-            // value={password}
-            // onChange={handleInputChange}
+            value={password}
+            onChange={handleInputChange}
           />
         </div>
         <div className="my-5">
@@ -78,8 +128,8 @@ export const Register = () => {
             placeholder="Repite tu Password"
             className="border w-full p-3 mt-3 bg-gray-50 rounded-xl"
             name="repeatPassword"
-            // value={repeatPassword}
-            // onChange={handleInputChange}
+            value={repeatPassword}
+            onChange={handleInputChange}
           />
         </div>
 
