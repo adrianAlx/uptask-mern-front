@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 
 import { useAlert } from '../hooks';
 import { fetchWithoutToken } from '../helpers/fetch';
-import { Alert } from '../components/Alert';
+import { Alert } from '../components';
 
 export const ConfirmAccount = () => {
   const { token } = useParams();

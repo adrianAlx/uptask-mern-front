@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 
 import { useAlert, useForm } from '../hooks';
-import { Alert } from '../components/Alert';
 import { fetchWithoutToken } from '../helpers/fetch';
+import { Alert } from '../components';
 
 const initState = {
   name: '',

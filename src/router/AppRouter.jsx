@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
+import { useAuth } from '../hooks';
 import AuthPublicLayout from '../layouts/AuthPublicLayout';
 import {
   ConfirmAccount,
@@ -10,6 +11,9 @@ import {
 } from '../pages';
 
 export const AppRouter = () => {
+  const { authLoading } = useAuth();
+  if (authLoading) return;
+
   return (
     <BrowserRouter>
       <Routes>

@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import { useAlert, useForm } from '../hooks';
 import { fetchWithoutToken } from '../helpers/fetch';
-import { Alert } from '../components/Alert';
+import { Alert } from '../components';
 
 export const NewPassword = () => {
   const { token } = useParams();
