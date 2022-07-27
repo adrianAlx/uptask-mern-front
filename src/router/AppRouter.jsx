@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import { useAuth } from '../hooks';
+import { PublicRoutes } from './PublicRoutes';
 import AuthPublicLayout from '../layouts/AuthPublicLayout';
 import PrivateLayout from '../layouts/PrivateLayout';
 import {
@@ -19,7 +20,14 @@ export const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AuthPublicLayout />}>
+        <Route
+          path="/"
+          element={
+            <PublicRoutes>
+              <AuthPublicLayout />
+            </PublicRoutes>
+          }
+        >
           <Route index element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="confirm-account/:token" element={<ConfirmAccount />} />

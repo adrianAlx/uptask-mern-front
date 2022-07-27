@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
 
       try {
         // Check token
-        const { data } = await fetchWithToken('/user/profile', 'GET', tokenJWT);
+        const { data } = await fetchWithToken('/users/profile', 'GET', tokenJWT);
 
         setAuth(data.user);
       } catch (error) {
