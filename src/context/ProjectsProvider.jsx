@@ -34,8 +34,7 @@ export const ProjectsProvider = ({ children }) => {
   );
 
   const submitProject = async project => {
-    console.log(project);
-    project.id ? 'await updateProject(project)' : await newProject(project);
+    project.id ? await updateProject(project) : await newProject(project);
   };
 
   const newProject = async project => {
@@ -78,6 +77,33 @@ export const ProjectsProvider = ({ children }) => {
       setTimeout(() => {
         navigate('/projects', { replace: true });
       }, 2000);
+    }
+  };
+
+  const updateProject = async project => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken(
+        `/projects/${project.id}`,
+        'PUT',
+        tokenJWT,
+        project
+      );
+      const updatedProjects = projects.map(projectState =>
+        projectState._id === data.project._id ? data.project : projectState
+      );
+      setProjects(updatedProjects);
+
+      setAlerta({ msg: data.msg, error: false });
+
+      setTimeout(() => {
+        setAlert({});
+        navigate('/projects', { replace: true });
+      }, 2100);
+    } catch (error) {
+      console.log(error);
     }
   };
 
