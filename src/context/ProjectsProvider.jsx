@@ -96,10 +96,9 @@ export const ProjectsProvider = ({ children }) => {
       );
       setProjects(updatedProjects);
 
-      setAlerta({ msg: data.msg, error: false });
+      setAlert({ msg: data.msg, error: false });
 
       setTimeout(() => {
-        setAlert({});
         navigate('/projects', { replace: true });
       }, 2100);
     } catch (error) {
@@ -107,9 +106,42 @@ export const ProjectsProvider = ({ children }) => {
     }
   };
 
+  const deleteProject = async id => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken(
+        `/projects/${id}`,
+        'DELETE',
+        tokenJWT
+      );
+      setAlert({ msg: data.msg, error: false });
+
+      setTimeout(() => {
+        navigate('/projects', { replace: true });
+      }, 2100);
+
+      const updatedProjects = projects.filter(
+        projectState => projectState._id !== id
+      );
+      setProjects(updatedProjects);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <ProjectContext.Provider
-      value={{ projects, alerta, project, setAlert, submitProject, getProject }}
+      value={{
+        projects,
+        alerta,
+        project,
+        setAlert,
+        submitProject,
+        getProject,
+        deleteProject,
+      }}
     >
       {children}
     </ProjectContext.Provider>
