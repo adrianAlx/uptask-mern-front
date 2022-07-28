@@ -3,7 +3,6 @@ import { ProjectPreview } from '../components';
 
 export const Projects = () => {
   const { projects } = useProjects();
-  console.log(projects);
 
   return (
     <>

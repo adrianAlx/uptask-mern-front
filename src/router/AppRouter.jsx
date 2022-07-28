@@ -10,6 +10,7 @@ import {
   NewPassword,
   NewProject,
   PasswordRecovery,
+  Project,
   Projects,
   Register,
 } from '../pages';
@@ -50,6 +51,8 @@ export const AppRouter = () => {
         >
           <Route index element={<Projects />} />
           <Route path="new" element={<NewProject />} />
+
+          <Route path=":id" element={<Project />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
