@@ -1,4 +1,4 @@
-import { createContext, useCallback, useState } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { getJwtFromLS } from '../helpers/checkJWTInLS';
@@ -11,6 +11,16 @@ export const ProjectsProvider = ({ children }) => {
   const [projects, setProjects] = useState([]);
   const [project, setProject] = useState({});
   const [alerta, setAlerta] = useState({});
+
+  useEffect(() => {
+    (async () => {
+      const tokenJWT = getJwtFromLS();
+      if (!tokenJWT) return;
+
+      const { data } = await fetchWithToken('/projects', 'GET', tokenJWT);
+      setProjects(data.projects);
+    })();
+  }, []);
 
   const setAlert = useCallback(
     alert => {
@@ -41,10 +51,9 @@ export const ProjectsProvider = ({ children }) => {
       );
       setProjects([...projects, data.project]);
 
-      setAlerta({ msg: data.msg, error: false });
+      setAlert({ msg: data.msg, error: false });
 
       setTimeout(() => {
-        setAlert({});
         navigate('/projects', { replace: true });
       }, 2100);
     } catch (error) {
