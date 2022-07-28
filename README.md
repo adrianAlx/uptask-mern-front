@@ -14,7 +14,6 @@ This is a full stak project developed with MERN Stack and Socket.io to give it a
 
 ## Running the app
 
-
 ```
 # install dependencies with yarn:
 yarn install
@@ -52,8 +51,16 @@ The Global State of the app in the fronted is handled with Context API through a
 The user must register with an e-mail address that has not been used before. Once the account has been created, the user must confirm the e-mail address entered by clicking on a link that will be sent immediately.
 This link will contain a one-time use token which, after validation, will be removed from the database so that it cannot be used again.
 
-### Screenshots
+## View demo
 
-![LogIn](.screenshots/login.png)
-![Admi](.screenshots/admin.png)
-![SignUp](.screenshots/sign-up.png)
+[Demo](https://uptask-mern-io-adrianlx.netlify.app/)
+
+​
+
+## Screenshots
+
+![LogiPage](.screenshots/login.png)
+![ProjecsPage](.screenshots/projects.png)
+![ProjecPage](.screenshots/projectPage.png)
+![Form](.screenshots/form.png)
+![AddCollaborator](.screenshots/addCollaborator.png)
