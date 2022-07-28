@@ -15,6 +15,7 @@ export const ProjectsProvider = ({ children }) => {
   const [modalTaskForm, setModalTaskForm] = useState(false);
   const [task, setTask] = useState({});
   const [modalDeleteTask, setModalDeleteTask] = useState(false);
+  const [collaborator, setCollaborator] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -252,6 +253,54 @@ export const ProjectsProvider = ({ children }) => {
     setTask({});
   };
 
+  // Collaborators
+  const getUser = async email => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken('/users', 'POST', tokenJWT, {
+        email,
+      });
+
+      setCollaborator(data.user);
+      setAlert({});
+    } catch (error) {
+      setAlert({
+        msg: error.response.data.errors[0].msg,
+        error: true,
+      });
+      setCollaborator({});
+    }
+  };
+
+  const addCollaborator = async email => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken(
+        `/projects/collaborator/${project._id}`,
+        'POST',
+        tokenJWT,
+        { email }
+      );
+      setAlert({ msg: data.msg });
+      setTimeout(() => {
+        navigate(`/projects/${project._id}`, { replace: true });
+      }, 2100);
+    } catch (error) {
+      setAlert({
+        msg:
+          error.response.data.msg ||
+          JSON.stringify(error.response.data.errors[0], null, 3),
+        error: true,
+      });
+    } finally {
+      setCollaborator({});
+    }
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -262,6 +311,7 @@ export const ProjectsProvider = ({ children }) => {
         task,
         formAlerta,
         modalDeleteTask,
+        collaborator,
         setAlert,
         setFormAlert,
         submitProject,
@@ -272,6 +322,8 @@ export const ProjectsProvider = ({ children }) => {
         handleEditTask,
         handleModalDeleteTask,
         deleteTask,
+        getUser,
+        addCollaborator,
       }}
     >
       {children}

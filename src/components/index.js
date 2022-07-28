@@ -8,3 +8,4 @@ export * from './ProjectPreview';
 export * from './ModalTaskForm';
 export * from './Task';
 export * from './ModalDeleteTask';
+export * from './CollaboratorForm';
