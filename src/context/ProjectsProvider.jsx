@@ -17,6 +17,7 @@ export const ProjectsProvider = ({ children }) => {
   const [modalDeleteTask, setModalDeleteTask] = useState(false);
   const [collaborator, setCollaborator] = useState({});
   const [modalDeleteCollaborator, setModalDeleteCollaborator] = useState(false);
+  const [projectSearcher, setProjectSearcher] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -370,6 +371,11 @@ export const ProjectsProvider = ({ children }) => {
     setAlert({});
   };
 
+  // Project sercher
+  const handleSearcher = () => {
+    setProjectSearcher(!projectSearcher);
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -382,6 +388,7 @@ export const ProjectsProvider = ({ children }) => {
         modalDeleteTask,
         collaborator,
         modalDeleteCollaborator,
+        projectSearcher,
         setAlert,
         setFormAlert,
         submitProject,
@@ -397,6 +404,7 @@ export const ProjectsProvider = ({ children }) => {
         handleModalDeletePartner,
         deleteCollaborator,
         completeTask,
+        handleSearcher,
       }}
     >
       {children}
