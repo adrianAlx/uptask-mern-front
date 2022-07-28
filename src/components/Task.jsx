@@ -2,7 +2,7 @@ import { useAdmin, useProjects } from '../hooks';
 import { formatDate } from '../helpers/formatDate';
 
 export const Task = ({ task }) => {
-  const { handleEditTask } = useProjects();
+  const { handleEditTask, handleModalDeleteTask } = useProjects();
   const { name, description, deliveryDate, priority, state, _id } = task;
   const isAdmin = useAdmin();
 
@@ -41,7 +41,7 @@ export const Task = ({ task }) => {
 
         {isAdmin && (
           <button
-            // onClick={() => handleModalDeleteTask(task)}
+            onClick={() => handleModalDeleteTask(task)}
             className="bg-red-600 px-4 py-3 text-white uppercase font-bold text-sm rounded-lg"
           >
             Eliminar

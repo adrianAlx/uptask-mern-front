@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Alert, ModalTaskForm, Task } from '../components';
+import { Alert, ModalDeleteTask, ModalTaskForm, Task } from '../components';
 
 import { useAdmin, useProjects } from '../hooks';
 
@@ -124,6 +124,7 @@ export const Project = () => {
           )}
 
           <ModalTaskForm />
+          <ModalDeleteTask />
         </>
       ) : (
         <div className="flex justify-center mt-5 mb-2">
