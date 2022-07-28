@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { io } from 'socket.io-client';
+
 import {
   Alert,
   Collaborator,
@@ -11,9 +13,20 @@ import {
 
 import { useAdmin, useProjects } from '../hooks';
 
+let socket;
+
 export const Project = () => {
   const { id } = useParams();
-  const { getProject, project, alerta, toggleTaskModal } = useProjects();
+  const {
+    addAddedTaskState,
+    alerta,
+    getProject,
+    project,
+    removeDeletedTaskState,
+    toggleTaskModal,
+    updateTaskState,
+    updateTaskStatus,
+  } = useProjects();
   const isAdmin = useAdmin();
 
   const [loading, setLoading] = useState(true);
@@ -25,6 +38,40 @@ export const Project = () => {
       setLoading(false);
     })();
   }, []);
+
+  useEffect(() => {
+    socket = io(import.meta.env.VITE_BACKEND_URL);
+
+    socket.emit('client:openProject', id);
+  }, []);
+
+  useEffect(() => {
+    socket.on('server:addedTask', addedTask => {
+      // Identificar a q project quiere actualizar las tasks en el state
+      addedTask.project === project._id && addAddedTaskState(addedTask);
+    });
+
+    socket.on('server:deletedTask', deletedTask => {
+      deletedTask.project === project._id &&
+        removeDeletedTaskState(deletedTask);
+    });
+
+    socket.on('server:updatedTask', updatedTask => {
+      updatedTask.project === project._id && updateTaskState(updatedTask);
+    });
+
+    socket.on('server:updatedTaskState', updatedTaskState => {
+      updatedTaskState.project._id === project._id &&
+        updateTaskStatus(updatedTaskState);
+    });
+
+    return () => {
+      socket.off('server:addedTask');
+      socket.off('server:deletedTask');
+      socket.off('server:updatedTask');
+      socket.off('server:updatedTaskState');
+    };
+  });
 
   return (
     <>

@@ -1,10 +1,13 @@
 import { createContext, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
 
 import { getJwtFromLS } from '../helpers/checkJWTInLS';
 import { fetchWithToken } from '../helpers/fetch';
 
 export const ProjectContext = createContext();
+
+let socket;
 
 export const ProjectsProvider = ({ children }) => {
   const navigate = useNavigate();
@@ -27,6 +30,10 @@ export const ProjectsProvider = ({ children }) => {
       const { data } = await fetchWithToken('/projects', 'GET', tokenJWT);
       setProjects(data.projects);
     })();
+  }, []);
+
+  useEffect(() => {
+    socket = io(import.meta.env.VITE_BACKEND_URL);
   }, []);
 
   const setAlert = useCallback(
@@ -165,10 +172,8 @@ export const ProjectsProvider = ({ children }) => {
       const { data } = await fetchWithToken('/tasks', 'POST', tokenJWT, task);
       setFormAlert({ msg: data.msg, error: false });
 
-      // Add added task to state
-      const updatedProject = { ...project };
-      updatedProject.tasks = [...updatedProject.tasks, data.task];
-      setProject(updatedProject);
+      // Socket.io: Send created task
+      socket.emit('client:createTask', data.task);
     } catch (error) {
       console.log(error);
       setFormAlert({
@@ -195,12 +200,8 @@ export const ProjectsProvider = ({ children }) => {
       );
       setFormAlert({ msg: data.msg, error: false });
 
-      // Update state
-      const updatedProject = { ...project };
-      updatedProject.tasks = project.tasks.map(taskState =>
-        taskState._id === data.task._id ? data.task : taskState
-      );
-      setProject(updatedProject);
+      // Socket.io: edit event
+      socket.emit('client:editTask', data.task);
     } catch (error) {
       console.log(error);
       setFormAlert({
@@ -237,12 +238,8 @@ export const ProjectsProvider = ({ children }) => {
       );
       setAlert({ msg: data.msg, error: false });
 
-      // Update state
-      const updatedProject = { ...project };
-      updatedProject.tasks = project.tasks.filter(
-        taskState => taskState._id !== task._id
-      );
-      setProject(updatedProject);
+      // Socket.io: Delete event
+      socket.emit('client:deleteTask', task);
     } catch (error) {
       console.log(error);
       setAlert({
@@ -351,13 +348,8 @@ export const ProjectsProvider = ({ children }) => {
         tokenJWT
       );
 
-      // Update state
-      const updatedProject = { ...project };
-      updatedProject.tasks = project.tasks.map(taskState =>
-        taskState._id === data.task._id ? data.task : taskState
-      );
-
-      setProject(updatedProject);
+      // Socket.io: toggle task state event
+      socket.emit('client:toggleTaskState', data.task);
     } catch (error) {
       setAlert({
         msg:
@@ -374,6 +366,54 @@ export const ProjectsProvider = ({ children }) => {
   // Project sercher
   const handleSearcher = () => {
     setProjectSearcher(!projectSearcher);
+  };
+
+  // Socket.io
+  const addAddedTaskState = addedTask => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    // Add added task to state
+    const updatedProject = { ...project };
+    updatedProject.tasks = [...updatedProject.tasks, addedTask];
+    setProject(updatedProject);
+  };
+
+  const removeDeletedTaskState = deletedTask => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    // Update state
+    const updatedProject = { ...project };
+    updatedProject.tasks = project.tasks.filter(
+      taskState => taskState._id !== deletedTask._id
+    );
+    setProject(updatedProject);
+  };
+
+  const updateTaskState = updatedTask => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    // Update state
+    const updatedProject = { ...project };
+    updatedProject.tasks = project.tasks.map(taskState =>
+      taskState._id === updatedTask._id ? updatedTask : taskState
+    );
+    setProject(updatedProject);
+  };
+
+  const updateTaskStatus = updatedTaskState => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    // Update state
+    const updatedProject = { ...project };
+    updatedProject.tasks = project.tasks.map(taskState =>
+      taskState._id === updatedTaskState._id ? updatedTaskState : taskState
+    );
+
+    setProject(updatedProject);
   };
 
   return (
@@ -405,6 +445,10 @@ export const ProjectsProvider = ({ children }) => {
         deleteCollaborator,
         completeTask,
         handleSearcher,
+        addAddedTaskState,
+        removeDeletedTaskState,
+        updateTaskState,
+        updateTaskStatus,
       }}
     >
       {children}
