@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Alert, ModalTaskForm } from '../components';
+import { Alert, ModalTaskForm, Task } from '../components';
 
 import { useAdmin, useProjects } from '../hooks';
 
@@ -85,7 +85,7 @@ export const Project = () => {
             )}
           </div>
 
-          {/* <div className="bg-white shadow mt-10 rounded-lg">
+          <div className="bg-white shadow mt-10 rounded-lg">
             {project.tasks?.length ? (
               project.tasks.map(task => <Task key={task._id} task={task} />)
             ) : (
@@ -93,7 +93,7 @@ export const Project = () => {
                 No hay tareas en este proyecto
               </p>
             )}
-          </div> */}
+          </div>
 
           {isAdmin && (
             <>
