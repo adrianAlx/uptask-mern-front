@@ -339,6 +339,37 @@ export const ProjectsProvider = ({ children }) => {
     }
   };
 
+  const completeTask = async id => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken(
+        `/tasks/state/${id}`,
+        'PATCH',
+        tokenJWT
+      );
+
+      // Update state
+      const updatedProject = { ...project };
+      updatedProject.tasks = project.tasks.map(taskState =>
+        taskState._id === data.task._id ? data.task : taskState
+      );
+
+      setProject(updatedProject);
+    } catch (error) {
+      setAlert({
+        msg:
+          error.response.data.msg ||
+          JSON.stringify(error.response.data.errors[0], null, 3),
+        error: true,
+      });
+    }
+
+    setTask({});
+    setAlert({});
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -365,6 +396,7 @@ export const ProjectsProvider = ({ children }) => {
         addCollaborator,
         handleModalDeletePartner,
         deleteCollaborator,
+        completeTask,
       }}
     >
       {children}

@@ -2,7 +2,7 @@ import { useAdmin, useProjects } from '../hooks';
 import { formatDate } from '../helpers/formatDate';
 
 export const Task = ({ task }) => {
-  const { handleEditTask, handleModalDeleteTask } = useProjects();
+  const { handleEditTask, handleModalDeleteTask, completeTask } = useProjects();
   const { name, description, deliveryDate, priority, state, _id } = task;
   const isAdmin = useAdmin();
 
@@ -34,7 +34,7 @@ export const Task = ({ task }) => {
           className={`${
             state ? 'bg-sky-600' : 'bg-gray-600'
           } px-4 py-3 text-white uppercase font-bold text-sm rounded-lg`}
-          // onClick={() => completeTask(_id)}
+          onClick={() => completeTask(_id)}
         >
           {state ? 'Completa' : 'Incompleta'}
         </button>
