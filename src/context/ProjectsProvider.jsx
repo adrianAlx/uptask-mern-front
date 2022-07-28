@@ -11,6 +11,7 @@ export const ProjectsProvider = ({ children }) => {
   const [projects, setProjects] = useState([]);
   const [project, setProject] = useState({});
   const [alerta, setAlerta] = useState({});
+  const [formAlerta, setFormAlerta] = useState({});
   const [modalTaskForm, setModalTaskForm] = useState(false);
   const [task, setTask] = useState({});
 
@@ -35,6 +36,17 @@ export const ProjectsProvider = ({ children }) => {
     [setAlerta]
   );
 
+  const setFormAlert = useCallback(
+    alert => {
+      setFormAlerta(alert);
+
+      setTimeout(() => {
+        setFormAlerta({});
+      }, 2400);
+    },
+    [setFormAlerta]
+  );
+
   const submitProject = async project => {
     project.id ? await updateProject(project) : await newProject(project);
   };
@@ -52,7 +64,7 @@ export const ProjectsProvider = ({ children }) => {
       );
       setProjects([...projects, data.project]);
 
-      setAlert({ msg: data.msg, error: false });
+      setFormAlert({ msg: data.msg, error: false });
 
       setTimeout(() => {
         navigate('/projects', { replace: true });
@@ -98,7 +110,7 @@ export const ProjectsProvider = ({ children }) => {
       );
       setProjects(updatedProjects);
 
-      setAlert({ msg: data.msg, error: false });
+      setFormAlert({ msg: data.msg, error: false });
 
       setTimeout(() => {
         navigate('/projects', { replace: true });
@@ -120,9 +132,7 @@ export const ProjectsProvider = ({ children }) => {
       );
       setAlert({ msg: data.msg, error: false });
 
-      setTimeout(() => {
-        navigate('/projects', { replace: true });
-      }, 2100);
+      navigate('/projects', { replace: true });
 
       const updatedProjects = projects.filter(
         projectState => projectState._id !== id
@@ -140,8 +150,7 @@ export const ProjectsProvider = ({ children }) => {
   };
 
   const submitTask = async task => {
-    task.taskId ? 'await editTask(task)' : await createTask(task);
-    // task.taskId ? await editTask(task) : await createTask(task);
+    task.taskId ? await editTask(task) : await createTask(task);
   };
 
   const createTask = async task => {
@@ -150,7 +159,7 @@ export const ProjectsProvider = ({ children }) => {
 
     try {
       const { data } = await fetchWithToken('/tasks', 'POST', tokenJWT, task);
-      setAlert({ msg: data.msg, error: false });
+      setFormAlert({ msg: data.msg, error: false });
 
       // Add added task to state
       const updatedProject = { ...project };
@@ -158,14 +167,52 @@ export const ProjectsProvider = ({ children }) => {
       setProject(updatedProject);
     } catch (error) {
       console.log(error);
-      setAlert({
+      setFormAlert({
         msg: JSON.stringify(error.response.data, null, 3),
         error: true,
       });
     }
 
-    setAlert({});
-    setModalTaskForm(false);
+    setTimeout(() => {
+      setModalTaskForm(false);
+    }, 2400);
+  };
+
+  const editTask = async task => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken(
+        `/tasks/${task.taskId}`,
+        'PUT',
+        tokenJWT,
+        task
+      );
+      setFormAlert({ msg: data.msg, error: false });
+
+      // Update state
+      const updatedProject = { ...project };
+      updatedProject.tasks = project.tasks.map(taskState =>
+        taskState._id === data.task._id ? data.task : taskState
+      );
+      setProject(updatedProject);
+    } catch (error) {
+      console.log(error);
+      setFormAlert({
+        msg: JSON.stringify(error.response.data, null, 3),
+        error: true,
+      });
+    }
+
+    setTimeout(() => {
+      setModalTaskForm(false);
+    }, 2400);
+  };
+
+  const handleEditTask = task => {
+    setTask(task);
+    setModalTaskForm(true);
   };
 
   return (
@@ -176,12 +223,15 @@ export const ProjectsProvider = ({ children }) => {
         project,
         modalTaskForm,
         task,
+        formAlerta,
         setAlert,
+        setFormAlert,
         submitProject,
         getProject,
         deleteProject,
         toggleTaskModal,
         submitTask,
+        handleEditTask,
       }}
     >
       {children}

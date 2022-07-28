@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import { useForm, useProjects } from '../hooks';
 import { Alert } from './Alert';
 
-
 const initState = {
   name: '',
   description: '',
@@ -14,12 +13,12 @@ const initState = {
 
 export const ProjectForm = () => {
   const { id } = useParams();
-  const { alerta, setAlert, submitProject, project } = useProjects();
+  const { formAlerta, setAlert, submitProject, project } = useProjects();
   const [formValues, handleInputChange, reset, setFormValues] =
     useForm(initState);
 
   const { name, description, deliveryDate, client } = formValues;
-  const { msg } = alerta;
+  const { msg } = formAlerta;
 
   useEffect(() => {
     id &&
@@ -48,7 +47,7 @@ export const ProjectForm = () => {
       onSubmit={handleSubmit}
       className="bg-white py-10 px-5 md:w-1/2 rounded-lg shadow"
     >
-      {msg && <Alert alerta={alerta} />}
+      {msg && <Alert alerta={formAlerta} />}
 
       <div className="mb-5">
         <label

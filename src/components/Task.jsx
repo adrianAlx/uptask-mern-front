@@ -1,7 +1,8 @@
-import { useAdmin } from '../hooks';
+import { useAdmin, useProjects } from '../hooks';
 import { formatDate } from '../helpers/formatDate';
 
 export const Task = ({ task }) => {
+  const { handleEditTask } = useProjects();
   const { name, description, deliveryDate, priority, state, _id } = task;
   const isAdmin = useAdmin();
 
@@ -22,7 +23,7 @@ export const Task = ({ task }) => {
       <div className="flex flex-col lg:flex-row gap-2">
         {isAdmin && (
           <button
-            // onClick={() => handleEditTask(task)}
+            onClick={() => handleEditTask(task)}
             className="bg-indigo-600 px-4 py-3 text-white uppercase font-bold text-sm rounded-lg"
           >
             Editar

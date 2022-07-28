@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useParams } from 'react-router-dom';
 
-import { useAlert, useForm, useProjects } from '../hooks';
+import { useForm, useProjects } from '../hooks';
 import { Alert } from './Alert';
 
 const initState = { name: '', description: '', priority: '', deliveryDate: '' };
@@ -10,14 +10,20 @@ const PRIORITY = ['Baja', 'Media', 'Alta'];
 
 export const ModalTaskForm = () => {
   const { id } = useParams();
-  const { modalTaskForm, toggleTaskModal, submitTask, task } = useProjects();
+  const {
+    formAlerta,
+    setFormAlert,
+    modalTaskForm,
+    toggleTaskModal,
+    submitTask,
+    task,
+  } = useProjects();
   const [formValues, handleInputChange, reset, setFormValues] =
     useForm(initState);
-  const [alerta, setAlerta] = useAlert({});
   const [taskId, setTaskId] = useState('');
 
   const { name, description, priority, deliveryDate } = formValues;
-  const { msg } = alerta;
+  const { msg } = formAlerta;
 
   useEffect(() => {
     if (task?._id) {
@@ -30,15 +36,18 @@ export const ModalTaskForm = () => {
 
     setTaskId('');
     reset();
-    setAlerta({});
+    setFormAlert({});
   }, [task]);
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if ([name, description, priority, deliveryDate].includes(''))
-      return setAlerta({ msg: 'Todos los campos son requeridos', error: true });
+      return setFormAlert({
+        msg: 'Todos los campos son requeridos',
+        error: true,
+      });
 
-    submitTask({
+    await submitTask({
       name,
       description,
       priority,
@@ -119,7 +128,7 @@ export const ModalTaskForm = () => {
                     {task?._id ? 'Editar Tarea' : 'Crear Tarea'}
                   </Dialog.Title>
 
-                  {msg && <Alert alerta={alerta} />}
+                  {msg && <Alert alerta={formAlerta} />}
 
                   <form onSubmit={handleSubmit} className="my-10">
                     <div className="mb-5">
