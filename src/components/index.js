@@ -10,3 +10,4 @@ export * from './Task';
 export * from './ModalDeleteTask';
 export * from './CollaboratorForm';
 export * from './Collaborator';
+export * from './ModalDeleteCollaborator';

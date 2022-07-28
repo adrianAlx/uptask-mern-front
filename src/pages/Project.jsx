@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import {
   Alert,
   Collaborator,
+  ModalDeleteCollaborator,
   ModalDeleteTask,
   ModalTaskForm,
   Task,
@@ -130,6 +131,7 @@ export const Project = () => {
 
           <ModalTaskForm />
           <ModalDeleteTask />
+          <ModalDeleteCollaborator />
         </>
       ) : (
         <div className="flex justify-center mt-5 mb-2">

@@ -16,6 +16,7 @@ export const ProjectsProvider = ({ children }) => {
   const [task, setTask] = useState({});
   const [modalDeleteTask, setModalDeleteTask] = useState(false);
   const [collaborator, setCollaborator] = useState({});
+  const [modalDeleteCollaborator, setModalDeleteCollaborator] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -301,6 +302,43 @@ export const ProjectsProvider = ({ children }) => {
     }
   };
 
+  const handleModalDeletePartner = collaborator => {
+    setModalDeleteCollaborator(!modalDeleteCollaborator);
+    setCollaborator(collaborator);
+  };
+
+  const deleteCollaborator = async () => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken(
+        `/projects/collaborator/${project._id}`,
+        'PUT',
+        tokenJWT,
+        { partnerId: collaborator.uid }
+      );
+      setAlert({ msg: data.msg });
+
+      // Update state
+      const updatedProject = { ...project };
+      updatedProject.collaborators = updatedProject.collaborators.filter(
+        partnerState => partnerState.uid !== collaborator.uid
+      );
+      setProject(updatedProject);
+    } catch (error) {
+      setAlert({
+        msg:
+          error.response.data.msg ||
+          JSON.stringify(error.response.data.errors[0], null, 3),
+        error: true,
+      });
+    } finally {
+      setCollaborator({});
+      setModalDeleteCollaborator(false);
+    }
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -312,6 +350,7 @@ export const ProjectsProvider = ({ children }) => {
         formAlerta,
         modalDeleteTask,
         collaborator,
+        modalDeleteCollaborator,
         setAlert,
         setFormAlert,
         submitProject,
@@ -324,6 +363,8 @@ export const ProjectsProvider = ({ children }) => {
         deleteTask,
         getUser,
         addCollaborator,
+        handleModalDeletePartner,
+        deleteCollaborator,
       }}
     >
       {children}
