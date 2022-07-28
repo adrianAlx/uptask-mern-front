@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Alert, ModalDeleteTask, ModalTaskForm, Task } from '../components';
+import {
+  Alert,
+  Collaborator,
+  ModalDeleteTask,
+  ModalTaskForm,
+  Task,
+} from '../components';
 
 import { useAdmin, useProjects } from '../hooks';
 
@@ -111,8 +117,7 @@ export const Project = () => {
               <div className="bg-white shadow mt-10 rounded-lg">
                 {project.collaborators?.length ? (
                   project.collaborators.map(partner => (
-                    // <Collaborator key={partner.uid} collaborator={partner} />
-                    <p key={partner.uid}>{partner.name}</p>
+                    <Collaborator key={partner.uid} collaborator={partner} />
                   ))
                 ) : (
                   <p className="text-center my-5 p-10">
