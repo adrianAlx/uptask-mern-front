@@ -6,6 +6,7 @@ import AuthPublicLayout from '../layouts/AuthPublicLayout';
 import PrivateLayout from '../layouts/PrivateLayout';
 import {
   ConfirmAccount,
+  EditProject,
   Login,
   NewPassword,
   NewProject,
@@ -51,6 +52,7 @@ export const AppRouter = () => {
         >
           <Route index element={<Projects />} />
           <Route path="new" element={<NewProject />} />
+          <Route path="edit/:id" element={<EditProject />} />
 
           <Route path=":id" element={<Project />} />
         </Route>
