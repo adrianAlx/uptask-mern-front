@@ -16,13 +16,17 @@ export const AuthProvider = ({ children }) => {
 
       try {
         // Check token
-        const { data } = await fetchWithToken('/users/profile', 'GET', tokenJWT);
+        const { data } = await fetchWithToken(
+          '/users/profile',
+          'GET',
+          tokenJWT
+        );
 
         setAuth(data.user);
       } catch (error) {
         setAuth({});
         console.log(error.response.data);
-        // logOut();
+        logOut();
       }
 
       // Private Routes
@@ -40,8 +44,13 @@ export const AuthProvider = ({ children }) => {
     [setAuth]
   );
 
+  const logOut = () => {
+    setAuth({});
+    localStorage.removeItem('token');
+  };
+
   return (
-    <AuthContext.Provider value={{ auth, authLoading, setAuthCb }}>
+    <AuthContext.Provider value={{ auth, authLoading, setAuthCb, logOut }}>
       {children}
     </AuthContext.Provider>
   );

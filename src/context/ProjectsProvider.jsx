@@ -416,6 +416,14 @@ export const ProjectsProvider = ({ children }) => {
     setProject(updatedProject);
   };
 
+  // Logout
+  const logoutProjects = () => {
+    setProjects([]);
+    setProject({});
+    setAlert({});
+    setTask({});
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -449,6 +457,7 @@ export const ProjectsProvider = ({ children }) => {
         removeDeletedTaskState,
         updateTaskState,
         updateTaskStatus,
+        logoutProjects,
       }}
     >
       {children}
