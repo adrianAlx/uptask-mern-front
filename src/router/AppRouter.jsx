@@ -8,11 +8,13 @@ import {
   ConfirmAccount,
   Login,
   NewPassword,
+  NewProject,
   PasswordRecovery,
   Projects,
   Register,
 } from '../pages';
 import { PrivateRoutes } from './PrivateRoutes';
+import { ProjectsProvider } from '../context/ProjectsProvider';
 
 export const AppRouter = () => {
   const { authLoading } = useAuth();
@@ -36,15 +38,18 @@ export const AppRouter = () => {
           <Route path="forgot-password/:token" element={<NewPassword />} />
         </Route>
 
-        <Route path="/projects" element={<PrivateLayout />}>
-          <Route
-            index
-            element={
-              <PrivateRoutes>
-                <Projects />
-              </PrivateRoutes>
-            }
-          />
+        <Route
+          path="/projects"
+          element={
+            <PrivateRoutes>
+              <ProjectsProvider>
+                <PrivateLayout />
+              </ProjectsProvider>
+            </PrivateRoutes>
+          }
+        >
+          <Route index element={<Projects />} />
+          <Route path="new" element={<NewProject />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
