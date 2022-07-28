@@ -11,6 +11,8 @@ export const ProjectsProvider = ({ children }) => {
   const [projects, setProjects] = useState([]);
   const [project, setProject] = useState({});
   const [alerta, setAlerta] = useState({});
+  const [modalTaskForm, setModalTaskForm] = useState(false);
+  const [task, setTask] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -131,16 +133,25 @@ export const ProjectsProvider = ({ children }) => {
     }
   };
 
+  // Tasks
+  const toggleTaskModal = () => {
+    setModalTaskForm(!modalTaskForm);
+    setTask({});
+  };
+
   return (
     <ProjectContext.Provider
       value={{
         projects,
         alerta,
         project,
+        modalTaskForm,
+        task,
         setAlert,
         submitProject,
         getProject,
         deleteProject,
+        toggleTaskModal,
       }}
     >
       {children}
