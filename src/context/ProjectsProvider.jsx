@@ -139,6 +139,35 @@ export const ProjectsProvider = ({ children }) => {
     setTask({});
   };
 
+  const submitTask = async task => {
+    task.taskId ? 'await editTask(task)' : await createTask(task);
+    // task.taskId ? await editTask(task) : await createTask(task);
+  };
+
+  const createTask = async task => {
+    const tokenJWT = getJwtFromLS();
+    if (!tokenJWT) return;
+
+    try {
+      const { data } = await fetchWithToken('/tasks', 'POST', tokenJWT, task);
+      setAlert({ msg: data.msg, error: false });
+
+      // Add added task to state
+      const updatedProject = { ...project };
+      updatedProject.tasks = [...updatedProject.tasks, data.task];
+      setProject(updatedProject);
+    } catch (error) {
+      console.log(error);
+      setAlert({
+        msg: JSON.stringify(error.response.data, null, 3),
+        error: true,
+      });
+    }
+
+    setAlert({});
+    setModalTaskForm(false);
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -152,6 +181,7 @@ export const ProjectsProvider = ({ children }) => {
         getProject,
         deleteProject,
         toggleTaskModal,
+        submitTask,
       }}
     >
       {children}
