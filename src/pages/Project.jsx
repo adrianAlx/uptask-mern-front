@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Alert } from '../components';
+import { Alert, ModalTaskForm } from '../components';
 
 import { useAdmin, useProjects } from '../hooks';
 
 export const Project = () => {
   const { id } = useParams();
-  const { getProject, project, alerta } = useProjects();
+  const { getProject, project, alerta, toggleTaskModal } = useProjects();
   const isAdmin = useAdmin();
 
   const [loading, setLoading] = useState(true);
@@ -56,7 +56,7 @@ export const Project = () => {
           {isAdmin && (
             <button
               type="button"
-              // onClick={toggleTaskModal}
+              onClick={toggleTaskModal}
               className="text-sm px-5 py-3 w-full md:w-auto rounded-lg uppercase font-bold bg-sky-400 text-white text-center mt-9 flex gap-2 items-center justify-center"
             >
               <svg
@@ -122,6 +122,8 @@ export const Project = () => {
               </div>
             </>
           )}
+
+          <ModalTaskForm />
         </>
       ) : (
         <div className="flex justify-center mt-5 mb-2">

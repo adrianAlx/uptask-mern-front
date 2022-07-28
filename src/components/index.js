@@ -5,3 +5,4 @@ export * from './Heder';
 export * from './Sidebar';
 export * from './ProjectForm';
 export * from './ProjectPreview';
+export * from './ModalTaskForm';
