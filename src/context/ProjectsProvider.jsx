@@ -61,9 +61,29 @@ export const ProjectsProvider = ({ children }) => {
     }
   };
 
+  const getProject = async id => {
+    try {
+      const tokenJWT = getJwtFromLS();
+      if (!tokenJWT) return;
+
+      const { data } = await fetchWithToken(`/projects/${id}`, 'GET', tokenJWT);
+      setProject(data.project);
+    } catch (error) {
+      console.log(error.response.data.errors[0]);
+      setAlert({
+        msg: JSON.stringify(error.response.data.errors[0]),
+        error: true,
+      });
+
+      setTimeout(() => {
+        navigate('/projects', { replace: true });
+      }, 2000);
+    }
+  };
+
   return (
     <ProjectContext.Provider
-      value={{ projects, alerta, project, setAlert, submitProject }}
+      value={{ projects, alerta, project, setAlert, submitProject, getProject }}
     >
       {children}
     </ProjectContext.Provider>
