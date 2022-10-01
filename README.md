@@ -53,9 +53,12 @@ This link will contain a one-time use token which, after validation, will be rem
 
 ## View demo
 
-[Demo](https://uptask-mern-io-adrianlx.netlify.app/)
+To see the real-time behavior you can log in with:
 
-​
+- User 1: `adrian@test.com` and password `test123`.
+- User 2: `adrian2@test.com` and password `test123`.
+
+[Demo](https://uptask-mern-io-adrianlx.netlify.app/)
 
 ## Screenshots
 
